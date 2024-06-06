@@ -1,0 +1,8 @@
+:root {
+    --color-text: #555;
+}
+
+body {
+    width: 100%;
+    margin: 20px;
+}
