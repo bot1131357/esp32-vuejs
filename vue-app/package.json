@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && 7z a -tgzip dist/index.min.js.gz dist/index.min.js && dir && robocopy dist ..\\platform_io_priv\\data index.html index.min.js.gz",
+    "build_comment": "added cmds to build > gzip > copy",
     "preview": "vite preview"
   },
   "dependencies": {

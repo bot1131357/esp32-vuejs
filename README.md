@@ -10,7 +10,7 @@ See Step 0 if you want to create from scratch.
 
 # From scratch
 ## Create a Vue project
-```
+```powershell
 npm init vue vue-app
 cd vue-app
 npm install
@@ -19,10 +19,51 @@ npm install
 
 ## Build config 
 Since SPIFFS runs on a flat file system, we want the output files to be placed in a flat directory structure. Add the following option to `vite.config.js`:
+```js
+build: { 
+  assetsDir: './'
+},
 ```
-	build: { 
-		assetsDir: './'
-	},
+
+
+## Optimization: Dependencies within a chunk
+We can gzip our dependencies into a single file and then compress it. Add the following option to `vite.config.js`:
+```js
+rollupOptions: {
+  output: {
+    inlineDynamicImports: false,
+    format: 'iife',
+    // single output
+    manualChunks: () => { 
+      return 'same chunk'
+    },
+    // rename js
+    entryFileNames: '[name].min.js', 
+    // chunkFileNames: '[name].chunk.js',
+  },
+},
+```
+
+
+## Optimization: Automate the build process
+After the build, we want to compress the file to reduce network payload. We do this by using gzip compression. After that we copy them to the `data/` of our esp32 dir. We can automate this process by changing `scripts.build` in `package.json`:
+```json
+"build": "vite build && 7z a -tgzip dist/index.min.js.gz dist/index.min.js && dir && robocopy dist ..\\platform_io_priv\\data index.html index.min.js.gz",
+```
+Note 1: I'm using 7z in a Windows environment so you'll have to adapt the command accordingly.
+Note 2: I'm using a different esp32 dir `platform_io_priv/` for testing, so in your case it would be `platform_io/`
+
+
+## Optimization: Serving gzip file
+We can gzip our dependencies into a single file and then compress it. Add the following option to `vite.config.js`:
+```cpp
+server.on("/index.min.js", HTTP_GET, [](AsyncWebServerRequest *request) {
+  // request->send(200, "text/plain", "Hello, world");
+  
+  AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/index.min.js.gz", "text/javascript");
+  response->addHeader("Content-Encoding", "gzip");
+  request->send(response);
+});
 ```
 
 
@@ -84,3 +125,7 @@ I suppose it comes down to how much your app benefits from Vue.js. 🙂
 
 ## Additional
 I've also tested with some components from PrimeVue (Button, Input, Toast), and the load inflated to 728kB and load time was about 9s... 😆
+
+
+## Acknowledgment
+Thank you [u/ProgrammaticallySale](https://www.reddit.com/r/esp32/comments/1d9b5o0/comment/l7ehnhm/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button) for the advice on bundling and compression. I learned something new.

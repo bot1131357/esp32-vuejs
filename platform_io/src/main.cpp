@@ -42,6 +42,14 @@ void setup() {
 		// request->send(200, "text/plain", "Hello, world");
 		request->send(SPIFFS, "/index.html");
 	});
+	// use this if you're using gzip bundle
+	server.on("/index.min.js", HTTP_GET, [](AsyncWebServerRequest *request) {
+		// request->send(200, "text/plain", "Hello, world");
+		
+		AsyncWebServerResponse *response = request->beginResponse(SPIFFS, "/index.min.js.gz", "text/javascript");
+		response->addHeader("Content-Encoding", "gzip");
+		request->send(response);
+	});
 
 	// assets
 	// 1. need to rename to 32 char
