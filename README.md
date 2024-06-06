@@ -17,6 +17,15 @@ npm install
 ```
 
 
+## Build config 
+Since SPIFFS runs on a flat file system, we want the output files to be placed in a flat directory structure. Add the following option to `vite.config.js`:
+```
+	build: { 
+		assetsDir: './'
+	},
+```
+
+
 ## Cleanup (For a clean project)
 Remove files in these dir:
 - `/assets`
@@ -56,11 +65,12 @@ npm run build
 
 
 ## Using the dist files in your Platform.io project
-Copy files from `/esp32-vuejs/dist` to `/platform_io/data` in your platform.io project. Since SPIFFS runs on a flat file system, move the files from `/platform_io/data/assets` to `/platform_io/data` and delete the dir.  
+Copy files from `/esp32-vuejs/dist` to `/platform_io/data` in your platform.io project.  
+~~Since SPIFFS runs on a flat file system, move the files from `/platform_io/data/assets` to `/platform_io/data` and delete the dir.~~
 
 
-## Update references 
-Since we no longer use the `/platform_io/data/assets` dir, remove the prefixes `/assets/` and `assets/` from the references in the generated files.
+## ~~Update references~~
+~~Since we no longer use the `/platform_io/data/assets` dir, remove the prefixes `/assets/` and `assets/` from the references in the generated files.~~
 
 
 ## Flashing ESP32
@@ -68,7 +78,7 @@ Upload filesystem image, and upload ESP32 program. Reset, and your Vue.js page i
 
 
 ## Thoughts
-Even with lazy loading, I'm loading 132kB - pretty significant for an ESP32. I could probably do with much less with just pure JS.
+The output files amount to 86.5kB. With lazy loading, I'm loading 87.5kB (89.9kB total) - pretty significant for an ESP32. I could probably do with much less with just pure JS.
 I suppose it comes down to how much your app benefits from Vue.js. 🙂
 
 

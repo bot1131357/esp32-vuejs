@@ -8,6 +8,12 @@ export default defineConfig({
   plugins: [
     vue(),
   ],
+	server: { 
+		host: '0.0.0.0'
+	},
+	build: { 
+		assetsDir: './'
+	},
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
